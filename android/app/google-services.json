@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "1068894781735",
+    "project_id": "messmanager-86242",
+    "storage_bucket": "messmanager-86242.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068894781735:android:cb637bc028a849e8efe902",
+        "android_client_info": {
+          "package_name": "com.example.mess_manager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1068894781735-5huj8fmoedi69dbh1j1tjvi3ifb2q1cf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtbLAcWHQhaZxU5CAVmQ3DnDC2734LvRY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1068894781735-5huj8fmoedi69dbh1j1tjvi3ifb2q1cf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068894781735:android:60344c6686a3e447efe902",
+        "android_client_info": {
+          "package_name": "com.sahid.messmanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1068894781735-5huj8fmoedi69dbh1j1tjvi3ifb2q1cf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtbLAcWHQhaZxU5CAVmQ3DnDC2734LvRY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1068894781735-5huj8fmoedi69dbh1j1tjvi3ifb2q1cf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

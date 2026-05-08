@@ -1,0 +1,62 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/repos/auth_repository.dart';
+import 'auth_event.dart';
+import 'auth_state.dart';
+
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  final AuthRepository _repo;
+
+  AuthBloc(this._repo) : super(AuthInitial()) {
+    on<AuthCheckRequested>(_onCheck);
+    on<LoginRequested>(_onLogin);
+    on<RegisterRequested>(_onRegister);
+    on<LogoutRequested>(_onLogout);
+  }
+
+  // App চালু হলে আগের session আছে কিনা দেখো
+  Future<void> _onCheck(
+      AuthCheckRequested e, Emitter emit) async {
+    emit(AuthLoading());
+    final user = await _repo.getCurrentUser();
+    if (user != null) {
+      emit(AuthAuthenticated(user));
+    } else {
+      emit(AuthUnauthenticated());
+    }
+  }
+
+  // Login
+  Future<void> _onLogin(
+      LoginRequested e, Emitter emit) async {
+    emit(AuthLoading());
+    try {
+      final user = await _repo.login(
+        email: e.email, password: e.password,
+      );
+      emit(AuthAuthenticated(user));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+  // Register
+  Future<void> _onRegister(
+      RegisterRequested e, Emitter emit) async {
+    emit(AuthLoading());
+    try {
+      final user = await _repo.register(
+        name: e.name, email: e.email, password: e.password,
+      );
+      emit(AuthAuthenticated(user));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+  // Logout
+  Future<void> _onLogout(
+      LogoutRequested e, Emitter emit) async {
+    await _repo.logout();
+    emit(AuthUnauthenticated());
+  }
+}
