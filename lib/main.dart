@@ -5,6 +5,7 @@ import 'firebase_options.dart';
 import 'features/auth/data/repos/auth_repo_impl.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
+import 'features/mess/presentation/bloc/mess_bloc.dart';
 import 'app/router.dart';
 
 void main() async {
@@ -20,9 +21,18 @@ class MessManagerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => AuthBloc(AuthRepoImpl())
-        ..add(AuthCheckRequested()), // app চালু হতেই check
+    return MultiBlocProvider(
+      providers: [
+        // AuthBloc — সবার আগে
+        BlocProvider(
+          create: (_) => AuthBloc(AuthRepoImpl())
+            ..add(AuthCheckRequested()),
+        ),
+        // MessBloc — Dashboard ও Setup এর জন্য
+        BlocProvider(
+          create: (_) => MessBloc(),
+        ),
+      ],
       child: Builder(builder: (ctx) {
         final router = createRouter(ctx);
         return MaterialApp.router(
