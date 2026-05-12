@@ -6,26 +6,19 @@ import '../bloc/auth_event.dart';
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SplashScreen> createState() => _State();
 }
-
-class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
+class _State extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
   late Animation<double> _fade;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-    _fade = CurvedAnimation(
-      parent: _ctrl, curve: Curves.easeIn,
-    );
+    _ctrl = AnimationController(vsync: this,
+      duration: const Duration(milliseconds: 1000));
+    _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeIn);
     _ctrl.forward();
-    // Login check করো
     context.read<AuthBloc>().add(AuthCheckRequested());
   }
 
@@ -42,25 +35,15 @@ class _SplashScreenState extends State<SplashScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.restaurant_menu,
-                size: 72, color: Colors.white),
+              Icon(Icons.restaurant_menu, size: 72, color: Colors.white),
               SizedBox(height: 16),
-              Text('MessManager',
-                style: TextStyle(
-                  fontSize: 28, fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                )),
+              Text('MessManager', style: TextStyle(
+                fontSize: 28, fontWeight: FontWeight.w600, color: Colors.white)),
               SizedBox(height: 8),
-              Text('মেস ম্যানেজমেন্ট সহজ করো',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white70,
-                )),
+              Text('মেস ম্যানেজমেন্ট সহজ করো', style: TextStyle(
+                fontSize: 14, color: Colors.white70)),
               SizedBox(height: 48),
-              CircularProgressIndicator(
-                color: Colors.white54,
-                strokeWidth: 2,
-              ),
+              CircularProgressIndicator(color: Colors.white54, strokeWidth: 2),
             ],
           ),
         ),

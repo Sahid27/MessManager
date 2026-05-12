@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/user.dart';
 
 class UserModel extends AppUser {
@@ -9,7 +10,6 @@ class UserModel extends AppUser {
     super.messId,
   });
 
-  // Firestore থেকে data নিয়ে UserModel বানাও
   factory UserModel.fromMap(Map<String, dynamic> map, String uid) {
     return UserModel(
       uid:    uid,
@@ -20,11 +20,15 @@ class UserModel extends AppUser {
     );
   }
 
-  // Firestore এ save করার জন্য Map বানাও
   Map<String, dynamic> toMap() => {
     'name':   name,
     'email':  email,
     'phone':  phone,
     'messId': messId,
   };
+
+  UserModel copyWith({String? messId}) => UserModel(
+    uid: uid, name: name, email: email,
+    phone: phone, messId: messId ?? this.messId,
+  );
 }

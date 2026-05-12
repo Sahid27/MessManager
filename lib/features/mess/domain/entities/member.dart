@@ -13,13 +13,9 @@ class MessMember {
     required this.joinedAt,
   });
 
-  // Manager কিনা সহজে check করার জন্য
   bool get isManager => role == UserRole.manager;
 
-  MessMember copyWith({UserRole? role}) {
-    return MessMember(
-      uid: uid, name: name, joinedAt: joinedAt,
-      role: role ?? this.role,
-    );
-  }
+  MessMember copyWith({UserRole? role}) => MessMember(
+    uid: uid, name: name, joinedAt: joinedAt,
+    role: role ?? this.role);
 }

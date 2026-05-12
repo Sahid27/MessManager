@@ -1,168 +1,328 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _State();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final _formKey   = GlobalKey<FormState>();
-  final _emailCtrl = TextEditingController();
-  final _passCtrl  = TextEditingController();
-  bool _obscure    = true;
+class _State extends State<LoginScreen> {
+  final _form = GlobalKey<FormState>();
+
+  final _email = TextEditingController();
+  final _pass = TextEditingController();
 
   @override
   void dispose() {
-    _emailCtrl.dispose();
-    _passCtrl.dispose();
+    _email.dispose();
+    _pass.dispose();
     super.dispose();
   }
 
   void _submit() {
-    if (!_formKey.currentState!.validate()) return;
-    context.read<AuthBloc>().add(LoginRequested(
-      email:    _emailCtrl.text.trim(),
-      password: _passCtrl.text.trim(),
-    ));
+    if (!_form.currentState!.validate()) return;
+
+    context.read<AuthBloc>().add(
+      LoginRequested(
+        email: _email.text.trim(),
+        password: _pass.text.trim(),
+      ),
+    );
+  }
+
+  void _listener(BuildContext ctx, AuthState state) {
+    if (state is AuthError) {
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text(state.message),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) {
     return BlocListener<AuthBloc, AuthState>(
-      listener: (ctx, state) {
-        if (state is AuthError) {
-          ScaffoldMessenger.of(ctx).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red.shade700,
-            ),
-          );
-        }
-      },
+      listener: _listener,
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 48),
-                  // Logo
-                  Container(
-                    width: 64, height: 64,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEEEDFE),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: const Icon(Icons.restaurant_menu,
-                      color: Color(0xFF534AB7), size: 32),
+        body: Column(
+          children: [
+
+            // ── Gradient Hero ─────────────────
+            Container(
+              height: 200,
+              decoration: const BoxDecoration(
+                gradient: AppTheme.gradPrimary,
+              ),
+              child: SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    20,
+                    0,
+                    20,
+                    24,
                   ),
-                  const SizedBox(height: 24),
-                  const Text('স্বাগতম আবার',
-                    style: TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 4),
-                  Text('তোমার মেসে সাইন ইন করো',
-                    style: TextStyle(
-                      color: Colors.grey.shade600)),
-                  const SizedBox(height: 32),
-                  // Email field
-                  TextFormField(
-                    controller: _emailCtrl,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'ইমেইল ঠিকানা',
-                      hintText: 'raju@gmail.com',
-                      prefixIcon: Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (v) {
-                      if (v == null || v.isEmpty)
-                        return 'ইমেইল দাও';
-                      if (!v.contains('@'))
-                        return 'সঠিক ইমেইল দাও';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  // Password field
-                  TextFormField(
-                    controller: _passCtrl,
-                    obscureText: _obscure,
-                    decoration: InputDecoration(
-                      labelText: 'পাসওয়ার্ড',
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(_obscure
-                          ? Icons.visibility_off
-                          : Icons.visibility),
-                        onPressed: () =>
-                          setState(() => _obscure = !_obscure),
-                      ),
-                    ),
-                    validator: (v) {
-                      if (v == null || v.isEmpty)
-                        return 'পাসওয়ার্ড দাও';
-                      if (v.length < 6)
-                        return 'কমপক্ষে ৬ অক্ষর দাও';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 24),
-                  // Login button
-                  BlocBuilder<AuthBloc, AuthState>(
-                    builder: (ctx, state) {
-                      final loading = state is AuthLoading;
-                      return FilledButton(
-                        onPressed: loading ? null : _submit,
-                        style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 14),
-                          backgroundColor:
-                            const Color(0xFF534AB7),
-                        ),
-                        child: loading
-                          ? const SizedBox(
-                              height: 20, width: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ))
-                          : const Text('সাইন ইন করো',
-                              style: TextStyle(fontSize: 15)),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Column(
+                    mainAxisAlignment:
+                        MainAxisAlignment.end,
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
                     children: [
-                      Text('একাউন্ট নেই? ',
-                        style: TextStyle(
-                          color: Colors.grey.shade600)),
-                      TextButton(
-                        onPressed: () =>
-                          context.push('/register'),
-                        child: const Text('এখানে রেজিস্টার করো'),
+
+                      Container(
+                        padding:
+                            const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white12,
+                          borderRadius:
+                              BorderRadius.circular(20),
+                        ),
+                        child: const Text(
+                          '👋 স্বাগতম আবার',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      Text(
+                        'তোমার মেসে\nসাইন ইন করো',
+                        style:
+                            GoogleFonts.spaceGrotesk(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          height: 1.15,
+                        ),
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
+            ),
+
+            // ── Form ──────────────────────────
+            Expanded(
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.all(20),
+                child: Form(
+                  key: _form,
+                  child: Column(
+                    children: [
+
+                      _InputField(
+                        ctrl: _email,
+                        label: 'ইমেইল',
+                        icon:
+                            Icons.email_outlined,
+                        type:
+                            TextInputType.emailAddress,
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      _InputField(
+                        ctrl: _pass,
+                        label: 'পাসওয়ার্ড',
+                        icon:
+                            Icons.lock_outline,
+                        obscure: true,
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      BlocBuilder<AuthBloc,
+                          AuthState>(
+                        builder: (_, state) {
+                          return _GradientButton(
+                            label:
+                                state is AuthLoading
+                                    ? 'লোড হচ্ছে...'
+                                    : 'সাইন ইন করো',
+                            gradient:
+                                AppTheme.gradPrimary,
+                            onTap:
+                                state is AuthLoading
+                                    ? () {}
+                                    : _submit,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Reusable Styled Input ──────────────
+class _InputField extends StatelessWidget {
+  final TextEditingController ctrl;
+  final String label;
+  final IconData icon;
+  final bool obscure;
+  final TextInputType? type;
+
+  const _InputField({
+    required this.ctrl,
+    required this.label,
+    required this.icon,
+    this.obscure = false,
+    this.type,
+  });
+
+  @override
+  Widget build(BuildContext _) {
+    return TextFormField(
+      controller: ctrl,
+      obscureText: obscure,
+      keyboardType: type,
+      style: const TextStyle(fontSize: 13),
+
+      validator: (v) {
+        if (v == null || v.isEmpty) {
+          return '$label দাও';
+        }
+
+        if (label == 'ইমেইল' &&
+            !RegExp(
+              r'^[^@]+@[^@]+\.[^@]+',
+            ).hasMatch(v)) {
+          return 'সঠিক ইমেইল দাও';
+        }
+
+        if (label == 'পাসওয়ার্ড' &&
+            v.length < 6) {
+          return 'কমপক্ষে ৬ অক্ষর দাও';
+        }
+
+        return null;
+      },
+
+      decoration: InputDecoration(
+        labelText: label,
+
+        prefixIcon: Icon(
+          icon,
+          color: AppTheme.primary,
+        ),
+
+        filled: true,
+        fillColor: const Color(0xFFF8F6FF),
+
+        border: OutlineInputBorder(
+          borderRadius:
+              BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Color(0xFFE9E4FF),
+          ),
+        ),
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius:
+              BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Color(0xFFE9E4FF),
+          ),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius:
+              BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: AppTheme.primary,
+            width: 2,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Reusable Gradient Button ───────────
+class _GradientButton extends StatelessWidget {
+  final String label;
+  final LinearGradient gradient;
+  final VoidCallback onTap;
+
+  const _GradientButton({
+    required this.label,
+    required this.gradient,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext _) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 50,
+
+        decoration: BoxDecoration(
+          gradient: gradient,
+
+          borderRadius:
+              BorderRadius.circular(14),
+
+          boxShadow: [
+            BoxShadow(
+              color: gradient.colors.last
+                  .withOpacity(.4),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+
+        child: Center(
+          child: Text(
+            label,
+            style:
+                GoogleFonts.spaceGrotesk(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              letterSpacing: .5,
             ),
           ),
         ),
       ),
     );
   }
+}
+
+// ── Theme ──────────────────────────────
+class AppTheme {
+  static const primary = Color(0xFF6C63FF);
+
+  static const gradPrimary = LinearGradient(
+    colors: [
+      Color(0xFF6C63FF),
+      Color(0xFF8E85FF),
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 }

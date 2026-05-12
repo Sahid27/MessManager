@@ -1,8 +1,8 @@
 class Mess {
-  final String id;
-  final String name;
-  final String inviteCode;   // ৬ ডিজিটের কোড
-  final String createdBy;    // uid
+  final String   id;
+  final String   name;
+  final String   inviteCode;
+  final String   createdBy;
   final DateTime createdAt;
 
   const Mess({

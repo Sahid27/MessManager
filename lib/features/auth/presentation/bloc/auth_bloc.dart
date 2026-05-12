@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/repos/auth_repository.dart';
+import '../../data/repos/auth_repo_impl.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final AuthRepository _repo;
+  final AuthRepoImpl _repo;
 
   AuthBloc(this._repo) : super(AuthInitial()) {
     on<AuthCheckRequested>(_onCheck);
@@ -13,49 +13,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LogoutRequested>(_onLogout);
   }
 
-  // App চালু হলে আগের session আছে কিনা দেখো
-  Future<void> _onCheck(
-      AuthCheckRequested e, Emitter emit) async {
+  Future<void> _onCheck(AuthCheckRequested e, Emitter emit) async {
     emit(AuthLoading());
     final user = await _repo.getCurrentUser();
-    if (user != null) {
-      emit(AuthAuthenticated(user));
-    } else {
-      emit(AuthUnauthenticated());
-    }
+    emit(user != null ? AuthAuthenticated(user) : AuthUnauthenticated());
   }
 
-  // Login
-  Future<void> _onLogin(
-      LoginRequested e, Emitter emit) async {
+  Future<void> _onLogin(LoginRequested e, Emitter emit) async {
     emit(AuthLoading());
     try {
-      final user = await _repo.login(
-        email: e.email, password: e.password,
-      );
+      final user = await _repo.login(email: e.email, password: e.password);
       emit(AuthAuthenticated(user));
-    } catch (e) {
-      emit(AuthError(e.toString()));
+    } catch (err) {
+      emit(AuthError(err.toString()));
     }
   }
 
-  // Register
-  Future<void> _onRegister(
-      RegisterRequested e, Emitter emit) async {
+  Future<void> _onRegister(RegisterRequested e, Emitter emit) async {
     emit(AuthLoading());
     try {
       final user = await _repo.register(
-        name: e.name, email: e.email, password: e.password,
-      );
+        name: e.name, email: e.email, password: e.password);
       emit(AuthAuthenticated(user));
-    } catch (e) {
-      emit(AuthError(e.toString()));
+    } catch (err) {
+      emit(AuthError(err.toString()));
     }
   }
 
-  // Logout
-  Future<void> _onLogout(
-      LogoutRequested e, Emitter emit) async {
+  Future<void> _onLogout(LogoutRequested e, Emitter emit) async {
     await _repo.logout();
     emit(AuthUnauthenticated());
   }
